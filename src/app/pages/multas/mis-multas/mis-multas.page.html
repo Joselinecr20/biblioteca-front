@@ -1,0 +1,71 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mis Multas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (!loading && totalPendiente > 0) {
+    <div class="total-banner">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <div>
+        <p>Total pendiente de pago</p>
+        <span class="total-monto">{{ totalPendiente | currency:'CRC':'₡' }}</span>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <ion-list>
+      @for (i of [1,2]; track i) {
+        <ion-item>
+          <ion-label>
+            <ion-skeleton-text animated style="width:60%;height:1rem;margin-bottom:6px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width:40%;height:1.2rem"></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  @if (!loading) {
+    @if (multas.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <h3>¡Sin multas!</h3>
+        <p>No tienes multas pendientes. Sigue así.</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (m of multas; track m.idMulta) {
+          <ion-item class="multa-card">
+            <ion-label>
+              <h2>
+                Multa #{{ m.idMulta }}
+                <ion-badge [class]="m.estado === 'pagada' ? 'badge-pagada' : 'badge-retrasado'">
+                  {{ m.estado | titlecase }}
+                </ion-badge>
+              </h2>
+              <p>{{ m.diasRetraso }} día(s) de retraso en préstamo #{{ m.idPrestamo }}</p>
+              <p class="monto-label" [class.pendiente]="m.estado === 'pendiente'">
+                <ion-icon name="cash-outline"></ion-icon>
+                {{ m.monto | currency:'CRC':'₡' }}
+              </p>
+              <ion-note>Generada: {{ m.fechaGeneracion | date:'dd/MM/yyyy' }}</ion-note>
+              @if (m.fechaPago) {
+                <ion-note> · Pagada: {{ m.fechaPago | date:'dd/MM/yyyy' }}</ion-note>
+              }
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  }
+</ion-content>

@@ -1,0 +1,57 @@
+.form-container {
+  padding: 12px 0 32px;
+}
+
+.portada-section {
+  padding: 20px 16px 12px;
+  border-top: 1px solid rgba(0,0,0,0.07);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  margin: 8px 0;
+
+  .portada-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-dark);
+    margin: 0 0 16px;
+    text-align: center;
+  }
+
+  .portada-hint {
+    margin: 10px 0 0;
+    font-size: 0.75rem;
+    color: #999;
+    text-align: center;
+  }
+
+  ion-item {
+    margin: 0;
+  }
+}
+
+ion-item {
+  margin: 0 16px 8px;
+  border-radius: 10px;
+}
+
+.field-error {
+  color: var(--ion-color-danger);
+  font-size: 0.76rem;
+  margin: -4px 28px 8px;
+}
+
+.req {
+  color: var(--ion-color-danger);
+}
+
+.form-actions {
+  padding: 24px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  ion-button {
+    --border-radius: 10px;
+    height: 48px;
+    font-weight: 700;
+  }
+}

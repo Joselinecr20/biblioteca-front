@@ -1,33 +1,52 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
-        <ion-list id="inbox-list">
-          <ion-list-header>Inbox</ion-list-header>
-          <ion-note>hi&#64;ionicframework.com</ion-note>
+  <ion-split-pane contentId="main-content" [disabled]="!showMenu">
 
-          @for (p of appPages; track p; let i = $index) {
+    <ion-menu contentId="main-content" type="overlay">
+      <ion-content class="menu-content">
+
+        <!-- Encabezado del menú -->
+        <div class="menu-header">
+          <div class="menu-avatar">
+            @if (fotoUrl && !fotoError) {
+              <img [src]="fotoUrl" alt="Foto de perfil" (error)="onFotoError()" />
+            } @else {
+              <span class="menu-iniciales">{{ iniciales() }}</span>
+            }
+          </div>
+          @if (userName) {
+            <p class="menu-username">{{ userName }}</p>
+            <span class="menu-role">{{ userRole | titlecase }}</span>
+          }
+        </div>
+
+        <!-- Ítems de navegación -->
+        <ion-list lines="none">
+          @for (item of menuItems; track item.url) {
             <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                <ion-label>{{ p.title }}</ion-label>
+              <ion-item
+                routerDirection="root"
+                [routerLink]="[item.url]"
+                routerLinkActive="selected"
+                detail="false">
+                <ion-icon slot="start" [name]="item.icon + '-outline'"></ion-icon>
+                <ion-label>{{ item.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
           }
         </ion-list>
 
-        <ion-list id="labels-list">
-          <ion-list-header>Labels</ion-list-header>
+        <!-- Pie del menú: Cerrar sesión -->
+        <div class="menu-footer">
+          <ion-item lines="none" button (click)="logout()" class="logout-item" detail="false">
+            <ion-icon slot="start" name="log-out-outline"></ion-icon>
+            <ion-label>Cerrar sesión</ion-label>
+          </ion-item>
+        </div>
 
-          @for (label of labels; track label) {
-            <ion-item lines="none">
-              <ion-icon aria-hidden="true" slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-              <ion-label>{{ label }}</ion-label>
-            </ion-item>
-          }
-        </ion-list>
       </ion-content>
     </ion-menu>
+
     <ion-router-outlet id="main-content"></ion-router-outlet>
+
   </ion-split-pane>
 </ion-app>

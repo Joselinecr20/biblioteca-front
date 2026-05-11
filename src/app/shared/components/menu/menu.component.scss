@@ -1,0 +1,19 @@
+// Reutiliza los estilos del menú definidos en app.component.scss
+ion-list {
+  background: transparent;
+  padding: 8px 0;
+}
+
+ion-item {
+  --background: transparent;
+  --color: rgba(255, 255, 255, 0.82);
+  --border-radius: 10px;
+  margin: 2px 10px;
+  --padding-start: 14px;
+
+  &.selected {
+    --background: rgba(255, 255, 255, 0.18);
+    --color: #fff;
+    ion-icon { color: var(--color-accent); }
+  }
+}

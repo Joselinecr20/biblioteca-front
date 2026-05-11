@@ -1,0 +1,62 @@
+.total-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 8px 4px;
+  padding: 16px;
+  background: rgba(235, 68, 90, 0.08);
+  border: 2px solid var(--ion-color-danger);
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: var(--ion-color-danger);
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0 0 4px;
+    font-size: 0.82rem;
+    color: #666;
+  }
+
+  .total-monto {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--ion-color-danger);
+  }
+}
+
+.multa-card {
+  --background: #fff;
+  margin: 4px 8px;
+  border-radius: 10px;
+
+  ion-label {
+    padding: 6px 0;
+
+    h2 {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    p { font-size: 0.82rem; color: #555; margin: 2px 0; }
+    ion-note { font-size: 0.78rem; }
+
+    .monto-label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &.pendiente { color: var(--ion-color-danger); }
+    }
+  }
+}

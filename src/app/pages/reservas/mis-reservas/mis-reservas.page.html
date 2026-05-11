@@ -1,0 +1,64 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mis Reservas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <ion-list>
+      @for (i of [1,2,3]; track i) {
+        <ion-item>
+          <ion-label>
+            <ion-skeleton-text animated style="width:70%;height:1rem;margin-bottom:6px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width:45%;height:0.8rem"></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  @if (!loading) {
+    @if (reservas.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <h3>Sin reservas activas</h3>
+        <p>Explora el catálogo para reservar libros</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (r of reservas; track r.idReserva) {
+          <ion-item class="reserva-card">
+            <ion-label>
+              <h2>
+                Reserva #{{ r.idReserva }}
+                <ion-badge [class]="badgeClass(r.estado)">{{ r.estado | titlecase }}</ion-badge>
+              </h2>
+              @if (r.tituloLibro) { <p class="titulo-libro">{{ r.tituloLibro }}</p> }
+              <ion-note>Fecha: {{ r.fechaReserva | date:'dd/MM/yyyy' }}</ion-note>
+              @if (r.diasPrestamo) {
+                <ion-note> · Plazo solicitado: <strong>{{ r.diasPrestamo }} días</strong></ion-note>
+              }
+              @if (r.fechaExpiracion) {
+                <ion-note> · Expira: {{ r.fechaExpiracion | date:'dd/MM/yyyy' }}</ion-note>
+              }
+            </ion-label>
+            @if (r.estado === 'pendiente') {
+              <ion-button slot="end" size="small" fill="outline" color="danger" (click)="cancelar(r)">
+                <ion-icon slot="start" name="close-outline"></ion-icon>
+                Cancelar
+              </ion-button>
+            }
+          </ion-item>
+        }
+      </ion-list>
+    }
+  }
+</ion-content>

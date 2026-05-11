@@ -1,37 +1,307 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+// Fondo global crema
+ion-content {
+  --background: var(--color-background);
+}
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+// Toolbar verde para todos los headers
+ion-toolbar {
+  --background: var(--color-primary);
+  --color: #ffffff;
+  --border-color: transparent;
+
+  ion-title { color: #ffffff; }
+  ion-back-button { color: #ffffff; }
+  ion-menu-button { color: #ffffff; }
+  ion-button { --color: #ffffff; }
+  ion-icon { color: #ffffff; }
+}
+
+// Cards con sombra suave
+ion-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(47, 93, 80, 0.1);
+  --background: #ffffff;
+  margin: 8px;
+}
+
+// Badges de estado
+.badge-pendiente  { --background: #ffc409; --color: #000; }
+.badge-aprobada   { --background: #2dd36f; --color: #fff; }
+.badge-rechazada  { --background: #eb445a; --color: #fff; }
+.badge-cancelada  { --background: #92949c; --color: #fff; }
+.badge-activo     { --background: #2196f3; --color: #fff; }
+.badge-devuelto   { --background: #2dd36f; --color: #fff; }
+.badge-retrasado  { --background: #eb445a; --color: #fff; }
+.badge-pagada     { --background: #2dd36f; --color: #fff; }
+
+// Stat cards en dashboards
+.stat-card {
+  height: 140px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(47, 93, 80, 0.22);
+  }
+
+  ion-card-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 16px 12px;
+
+    ion-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      display: block;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: #666;
+      display: block;
+      line-height: 1.2;
+    }
+  }
+}
+
+// Welcome banner en dashboards
+.welcome-banner {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #3d7a68 100%);
+  padding: 24px 20px 20px;
+  color: #fff;
+
+  h2 {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+}
+
+// Section headers
+.section-header {
+  padding: 20px 16px 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-dark);
+  letter-spacing: 0.3px;
+}
+
+// Estilos de listas
+ion-list {
+  background: transparent;
+}
+
+// Avatar con iniciales
+.avatar-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+// Empty state
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+
+  ion-icon {
+    font-size: 4rem;
+    color: var(--color-accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: #999;
+  }
+}
+
+// Chips / badges de estado inline
+ion-badge {
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+// Inputs en formularios
+ion-item {
+  --background: #fff;
+  --border-radius: 8px;
+  margin-bottom: 4px;
+  --highlight-color-focused: var(--color-primary);
+  --highlight-color-valid: var(--color-primary);
+}
+
+// FAB button
+ion-fab-button {
+  --background: var(--color-primary);
+  --box-shadow: 0 4px 16px rgba(47, 93, 80, 0.35);
+}
+
+// Separador de sección
+.divider-line {
+  height: 1px;
+  background: rgba(0,0,0,0.08);
+  margin: 4px 16px;
+}
+
+// ── Alerts personalizados ──────────────────────────────────
+.biblioteca-alert {
+  .alert-wrapper {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(47, 93, 80, 0.28);
+    background: #fff;
+    min-width: 300px;
+    max-width: 340px;
+  }
+
+  // Header con gradiente verde — igual que los toolbars
+  .alert-head {
+    background: linear-gradient(135deg, #2F5D50 0%, #3d7a68 100%);
+    padding: 22px 20px 16px;
+    text-align: center;
+
+    .alert-title {
+      color: #fff;
+      font-size: 1.08rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .alert-sub-title {
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.83rem;
+      margin-top: 5px;
+      font-style: italic;
+      line-height: 1.4;
+    }
+  }
+
+  // Mensaje centrado
+  .alert-message {
+    text-align: center;
+    color: #555;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    padding: 16px 22px 4px;
+  }
+
+  // Radios para selección de días
+  .alert-radio-group {
+    border-top: 1px solid #ede8df;
+    border-bottom: 1px solid #ede8df;
+    padding: 4px 0;
+
+    .alert-radio-button {
+      --color: #888;
+
+      .alert-radio-label { font-size: 0.9rem; }
+
+      &[aria-checked=true] {
+        --color: var(--color-primary);
+        .alert-radio-label { color: var(--color-primary); font-weight: 600; }
+        .alert-radio-inner { border-color: var(--color-primary); background: var(--color-primary); }
+      }
+    }
+  }
+
+  // Botones apilados verticalmente — asimétricos
+  .alert-button-group {
+    flex-direction: column !important;
+    padding: 14px 18px 18px;
+    gap: 8px;
+
+    .alert-button {
+      width: 100%;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      margin: 0;
+      border: none;
+
+      .alert-button-inner { justify-content: center; }
+
+      // Cancelar: fantasma pequeño — poca jerarquía
+      &.alert-button-role-cancel {
+        background: transparent;
+        color: #aaa;
+        font-weight: 500;
+        font-size: 0.82rem;
+        min-height: 34px;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      // Acción principal: sólido y grande
+      &:not(.alert-button-role-cancel) {
+        min-height: 46px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+    }
+  }
+}
+
+// Botón confirmar — verde sólido
+.alert-confirm {
+  background: #2F5D50 !important;
+  color: #fff !important;
+  order: -1; // aparece primero (encima del cancelar)
+}
+
+// Botón peligro — rojo sólido
+.alert-danger {
+  background: #eb445a !important;
+  color: #fff !important;
+  order: -1;
+}

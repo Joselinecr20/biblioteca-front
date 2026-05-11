@@ -1,0 +1,68 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Multas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <ion-list>
+      @for (i of [1,2,3]; track i) {
+        <ion-item>
+          <ion-label>
+            <ion-skeleton-text animated style="width:60%;height:1rem;margin-bottom:6px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width:40%;height:0.8rem"></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  @if (!loading) {
+    @if (multas.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="cash-outline"></ion-icon>
+        <h3>Sin multas</h3>
+        <p>No hay multas registradas</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (m of multas; track m.idMulta) {
+          <ion-item class="multa-item">
+            <ion-label>
+              <h2>
+                Multa #{{ m.idMulta }}
+                <ion-badge [class]="m.estado === 'pagada' ? 'badge-pagada' : 'badge-retrasado'">
+                  {{ m.estado | titlecase }}
+                </ion-badge>
+              </h2>
+              @if (m.nombreUsuario) { <p>Usuario: {{ m.nombreUsuario }}</p> }
+              <p>Préstamo #{{ m.idPrestamo }} · {{ m.diasRetraso }} día(s) de retraso</p>
+              <p class="monto" [class.monto-pendiente]="m.estado === 'pendiente'">
+                Monto: {{ m.monto | currency:'CRC':'₡' }}
+              </p>
+              <ion-note>Generada: {{ m.fechaGeneracion | date:'dd/MM/yyyy' }}</ion-note>
+              @if (m.fechaPago) {
+                <ion-note> · Pagada: {{ m.fechaPago | date:'dd/MM/yyyy' }}</ion-note>
+              }
+            </ion-label>
+            @if (m.estado === 'pendiente') {
+              <ion-button slot="end" size="small" fill="solid" color="success"
+                (click)="registrarPago(m)">
+                <ion-icon slot="start" name="card-outline"></ion-icon>
+                Pagar
+              </ion-button>
+            }
+          </ion-item>
+        }
+      </ion-list>
+    }
+  }
+</ion-content>

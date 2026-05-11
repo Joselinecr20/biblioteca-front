@@ -1,0 +1,73 @@
+.alerta-vencimiento {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 8px 0;
+  padding: 10px 14px;
+  background: rgba(255, 196, 9, 0.15);
+  border-left: 4px solid var(--ion-color-warning);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #7a5c00;
+  font-weight: 600;
+
+  ion-icon { font-size: 1.2rem; color: var(--ion-color-warning); }
+}
+
+.alerta-retrasado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 8px 0;
+  padding: 10px 14px;
+  background: rgba(235, 68, 90, 0.1);
+  border-left: 4px solid var(--ion-color-danger);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--ion-color-danger);
+  font-weight: 600;
+
+  ion-icon { font-size: 1.2rem; }
+}
+
+.prestamo-card {
+  --background: #fff;
+  margin: 4px 8px;
+  border-radius: 10px;
+
+  ion-label {
+    padding: 6px 0;
+
+    h2 {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .titulo-libro {
+      font-weight: 500;
+      color: var(--color-primary);
+      font-size: 0.9rem;
+    }
+
+    ion-note { font-size: 0.78rem; }
+
+    .dias-restantes {
+      font-size: 0.82rem;
+      color: var(--ion-color-success);
+      font-weight: 600;
+      margin: 4px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &.urgente {
+        color: var(--ion-color-danger);
+      }
+    }
+  }
+}

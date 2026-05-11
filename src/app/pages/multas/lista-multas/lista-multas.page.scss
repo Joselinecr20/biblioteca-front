@@ -1,0 +1,37 @@
+.multa-item {
+  --background: #fff;
+  margin: 4px 8px;
+  border-radius: 10px;
+  align-items: flex-start;
+
+  ion-label {
+    padding: 6px 0;
+
+    h2 {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    p { font-size: 0.82rem; color: #555; margin: 2px 0; }
+    ion-note { font-size: 0.78rem; }
+
+    .monto {
+      font-weight: 700;
+      color: var(--color-dark);
+      font-size: 1rem;
+    }
+
+    .monto-pendiente { color: var(--ion-color-danger); }
+  }
+
+  ion-button[slot="end"] {
+    --border-radius: 8px;
+    align-self: center;
+    margin: 8px 0;
+  }
+}

@@ -1,0 +1,12 @@
+.search-btn-container {
+  padding: 20px 16px 8px;
+
+  .search-main-btn {
+    --background: var(--color-secondary);
+    --border-radius: 14px;
+    --box-shadow: 0 4px 20px rgba(122, 92, 62, 0.35);
+    height: 56px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}

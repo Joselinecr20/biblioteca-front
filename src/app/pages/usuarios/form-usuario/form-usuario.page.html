@@ -1,0 +1,103 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/usuarios" text="Cancelar"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditing ? 'Editar Usuario' : 'Nuevo Usuario' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="guardar()" [disabled]="loading">
+        @if (loading) { <ion-spinner name="crescent" slot="icon-only"></ion-spinner> }
+        @else { Guardar }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
+
+    <!-- Foto de perfil (solo en modo edición) -->
+    @if (isEditing && usuarioId) {
+      <div class="foto-section">
+        <p class="foto-label">Foto de perfil</p>
+        <app-image-picker
+          tipo="usuario"
+          [id]="usuarioId!"
+          (imagenSubida)="onFotoSubida()">
+        </app-image-picker>
+        <p class="foto-hint">Toca la imagen para cambiarla</p>
+      </div>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Usuario <span class="req">*</span></ion-label>
+      <ion-input type="text" formControlName="usuario" [readonly]="isEditing"></ion-input>
+    </ion-item>
+    @if (f['usuario'].invalid && f['usuario'].touched) {
+      <p class="field-error">El usuario es requerido.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">
+        Contraseña {{ isEditing ? '(dejar vacío para no cambiar)' : '*' }}
+      </ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+    @if (f['password'].invalid && f['password'].touched) {
+      <p class="field-error">Mínimo 6 caracteres.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Nombre <span class="req">*</span></ion-label>
+      <ion-input type="text" formControlName="nombre"></ion-input>
+    </ion-item>
+    @if (f['nombre'].invalid && f['nombre'].touched) {
+      <p class="field-error">El nombre es requerido.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Apellido <span class="req">*</span></ion-label>
+      <ion-input type="text" formControlName="apellido"></ion-input>
+    </ion-item>
+    @if (f['apellido'].invalid && f['apellido'].touched) {
+      <p class="field-error">El apellido es requerido.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Correo electrónico <span class="req">*</span></ion-label>
+      <ion-input type="email" formControlName="correo"></ion-input>
+    </ion-item>
+    @if (f['correo'].invalid && f['correo'].touched) {
+      <p class="field-error">Ingrese un correo válido.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Teléfono</ion-label>
+      <ion-input type="tel" formControlName="telefono"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Rol <span class="req">*</span></ion-label>
+      <ion-select formControlName="rol" interface="action-sheet" placeholder="Seleccione">
+        @for (r of roles; track r) {
+          <ion-select-option [value]="r">{{ r | titlecase }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    @if (isEditing) {
+      <ion-item>
+        <ion-label>Activo</ion-label>
+        <ion-toggle formControlName="activo" color="primary" slot="end"></ion-toggle>
+      </ion-item>
+    }
+
+    <div class="form-actions">
+      <ion-button expand="block" type="submit" color="primary" [disabled]="loading">
+        @if (loading) { <ion-spinner name="crescent"></ion-spinner> }
+        @else { {{ isEditing ? 'Actualizar Usuario' : 'Crear Usuario' }} }
+      </ion-button>
+    </div>
+
+  </form>
+</ion-content>

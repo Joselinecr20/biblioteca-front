@@ -1,0 +1,111 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Panel Admin</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Banner de bienvenida -->
+  <div class="welcome-banner">
+    <h2>Bienvenido, {{ nombre }}</h2>
+    <p>Administrador del Sistema</p>
+  </div>
+
+  <!-- Tarjetas de estadísticas -->
+  <div class="section-header">Resumen General</div>
+  <ion-grid class="stats-grid">
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="stat-card" routerLink="/libros">
+          <ion-card-content>
+            <ion-icon name="book-outline" color="primary"></ion-icon>
+            @if (loading) {
+              <ion-skeleton-text animated style="width:60%;height:2rem;margin:8px auto"></ion-skeleton-text>
+            } @else {
+              <span class="stat-number">{{ stats.libros }}</span>
+            }
+            <span class="stat-label">Total Libros</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card" routerLink="/usuarios">
+          <ion-card-content>
+            <ion-icon name="people-outline" color="secondary"></ion-icon>
+            @if (loading) {
+              <ion-skeleton-text animated style="width:60%;height:2rem;margin:8px auto"></ion-skeleton-text>
+            } @else {
+              <span class="stat-number">{{ stats.usuarios }}</span>
+            }
+            <span class="stat-label">Usuarios</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card" routerLink="/prestamos">
+          <ion-card-content>
+            <ion-icon name="receipt-outline" color="tertiary"></ion-icon>
+            @if (loading) {
+              <ion-skeleton-text animated style="width:60%;height:2rem;margin:8px auto"></ion-skeleton-text>
+            } @else {
+              <span class="stat-number">{{ stats.prestamosActivos }}</span>
+            }
+            <span class="stat-label">Préstamos Activos</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card" routerLink="/multas">
+          <ion-card-content>
+            <ion-icon name="cash-outline" color="danger"></ion-icon>
+            @if (loading) {
+              <ion-skeleton-text animated style="width:60%;height:2rem;margin:8px auto"></ion-skeleton-text>
+            } @else {
+              <span class="stat-number">{{ stats.multasPendientes }}</span>
+            }
+            <span class="stat-label">Multas Pendientes</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Acceso rápido -->
+  <div class="section-header">Acceso Rápido</div>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <ion-button expand="block" fill="outline" color="primary" routerLink="/libros">
+          <ion-icon slot="start" name="book-outline"></ion-icon>Libros
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button expand="block" fill="outline" color="primary" routerLink="/usuarios">
+          <ion-icon slot="start" name="people-outline"></ion-icon>Usuarios
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button expand="block" fill="outline" color="secondary" routerLink="/reservas">
+          <ion-icon slot="start" name="calendar-outline"></ion-icon>Reservas
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button expand="block" fill="outline" color="secondary" routerLink="/prestamos">
+          <ion-icon slot="start" name="receipt-outline"></ion-icon>Préstamos
+        </ion-button>
+      </ion-col>
+      <ion-col size="12">
+        <ion-button expand="block" fill="outline" color="danger" routerLink="/multas">
+          <ion-icon slot="start" name="cash-outline"></ion-icon>Gestionar Multas
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

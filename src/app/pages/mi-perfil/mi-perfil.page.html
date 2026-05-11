@@ -1,0 +1,96 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mi Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <!-- Hero de perfil -->
+  <div class="perfil-hero">
+    <!-- Foto con ImagePicker -->
+    <div class="foto-wrapper">
+      <app-image-picker
+        tipo="usuario"
+        [id]="idCuenta"
+        (imagenSubida)="onFotoSubida()">
+      </app-image-picker>
+    </div>
+    <h2 class="perfil-nombre">{{ nombre }}</h2>
+    <span class="perfil-rol">{{ rol | uppercase }}</span>
+    <p class="perfil-hint">Toca la foto para cambiarla</p>
+  </div>
+
+  <!-- Datos del usuario -->
+  @if (!loading && usuario) {
+    <ion-card class="perfil-card">
+      <ion-card-content>
+
+        <ion-item lines="none">
+          <ion-icon name="person-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <p>Nombre completo</p>
+            <h3>{{ usuario.nombre }} {{ usuario.apellido }}</h3>
+          </ion-label>
+        </ion-item>
+
+        @if (usuario.correo) {
+          <ion-item lines="none">
+            <ion-icon name="mail-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <p>Correo electrónico</p>
+              <h3>{{ usuario.correo }}</h3>
+            </ion-label>
+          </ion-item>
+        }
+
+        @if (usuario.telefono) {
+          <ion-item lines="none">
+            <ion-icon name="call-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <p>Teléfono</p>
+              <h3>{{ usuario.telefono }}</h3>
+            </ion-label>
+          </ion-item>
+        }
+
+        <ion-item lines="none">
+          <ion-icon name="shield-checkmark-outline" slot="start" color="secondary"></ion-icon>
+          <ion-label>
+            <p>Rol en el sistema</p>
+            <h3>{{ rol | titlecase }}</h3>
+          </ion-label>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-icon name="ellipse-outline" slot="start" [color]="usuario.activo ? 'success' : 'danger'"></ion-icon>
+          <ion-label>
+            <p>Estado</p>
+            <h3>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</h3>
+          </ion-label>
+        </ion-item>
+
+      </ion-card-content>
+    </ion-card>
+  }
+
+  @if (loading) {
+    <ion-card class="perfil-card">
+      <ion-card-content>
+        @for (i of [1,2,3]; track i) {
+          <ion-item lines="none">
+            <ion-icon name="person-outline" slot="start" color="medium"></ion-icon>
+            <ion-label>
+              <ion-skeleton-text animated style="width:40%;height:0.75rem;margin-bottom:4px"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width:70%;height:1rem"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-card-content>
+    </ion-card>
+  }
+
+</ion-content>

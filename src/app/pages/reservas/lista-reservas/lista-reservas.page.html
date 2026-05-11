@@ -1,0 +1,69 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Reservas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <ion-list>
+      @for (i of [1,2,3,4]; track i) {
+        <ion-item>
+          <ion-label>
+            <ion-skeleton-text animated style="width:70%;height:1rem;margin-bottom:6px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width:50%;height:0.8rem"></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  @if (!loading) {
+    @if (reservas.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <h3>Sin reservas</h3>
+        <p>No hay reservas registradas</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (r of reservas; track r.idReserva) {
+          <ion-item class="reserva-item">
+            <ion-label>
+              <h2>
+                Reserva #{{ r.idReserva }}
+                <ion-badge [class]="badgeClass(r.estado)">{{ r.estado | titlecase }}</ion-badge>
+              </h2>
+              @if (r.tituloLibro) { <p class="libro-name">{{ r.tituloLibro }}</p> }
+              @if (r.nombreUsuario) { <p>Usuario: {{ r.nombreUsuario }}</p> }
+              <ion-note>{{ r.fechaReserva | date:'dd/MM/yyyy HH:mm' }}</ion-note>
+              @if (r.diasPrestamo) {
+                <ion-note> · <strong>{{ r.diasPrestamo }} días solicitados</strong></ion-note>
+              }
+              @if (r.observaciones) {
+                <p class="obs">{{ r.observaciones }}</p>
+              }
+            </ion-label>
+            <div slot="end" class="action-btns">
+              @if (r.estado === 'pendiente') {
+                <ion-button size="small" fill="solid" color="success" (click)="aprobar(r)">
+                  <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
+                </ion-button>
+                <ion-button size="small" fill="solid" color="danger" (click)="rechazar(r)">
+                  <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                </ion-button>
+              }
+            </div>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  }
+</ion-content>

@@ -1,0 +1,14 @@
+<ion-list lines="none">
+  @for (item of menuItems; track item.url) {
+    <ion-menu-toggle auto-hide="false">
+      <ion-item
+        routerDirection="root"
+        [routerLink]="[item.url]"
+        routerLinkActive="selected"
+        detail="false">
+        <ion-icon slot="start" [name]="item.icon + '-outline'"></ion-icon>
+        <ion-label>{{ item.title }}</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+  }
+</ion-list>

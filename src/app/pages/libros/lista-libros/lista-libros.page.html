@@ -1,0 +1,137 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Catálogo de Libros</ion-title>
+    @if (esAdminOBibliotecario()) {
+      <ion-buttons slot="end">
+        <ion-button fill="clear" routerLink="/libros/nuevo">
+          <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-searchbar
+      placeholder="Buscar por título o editorial..."
+      (ionInput)="buscar($event)"
+      animated
+      [debounce]="300">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Skeleton loading -->
+  @if (loading) {
+    <ion-grid>
+      <ion-row>
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <ion-col size="6" size-md="4" size-lg="3">
+            <ion-card>
+              <ion-skeleton-text animated style="height:180px;width:100%;margin:0"></ion-skeleton-text>
+              <ion-card-content>
+                <ion-skeleton-text animated style="width:80%;height:1rem;margin-bottom:6px"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width:55%;height:0.8rem"></ion-skeleton-text>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  }
+
+  <!-- Grid de libros -->
+  @if (!loading) {
+    @if (filteredLibros.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="book-outline"></ion-icon>
+        <h3>No se encontraron libros</h3>
+        <p>Intenta con otro término de búsqueda</p>
+      </div>
+    } @else {
+      <ion-grid>
+        <ion-row>
+          @for (libro of filteredLibros; track libro.idLibro) {
+            <ion-col size="6" size-md="4" size-lg="3">
+              <ion-card class="libro-card" [routerLink]="['/libros', libro.idLibro]">
+                <!-- Portada -->
+                <div class="portada-container">
+                  @if (portadaUrls.get(libro.idLibro)) {
+                    <img
+                      [src]="portadaUrls.get(libro.idLibro)"
+                      [alt]="libro.titulo"
+                      class="portada-img" />
+                  } @else {
+                    <div class="portada-placeholder">
+                      <ion-icon name="book-outline"></ion-icon>
+                    </div>
+                  }
+                  <!-- Badge de disponibilidad -->
+                  <ion-badge [class]="libro.disponible === false ? 'badge-rechazada' : 'badge-aprobada'" class="disponibilidad-badge">
+                    {{ libro.disponible === false ? 'No disponible' : 'Disponible' }}
+                  </ion-badge>
+                </div>
+
+                <ion-card-content class="libro-info">
+                  <p class="libro-titulo">{{ libro.titulo }}</p>
+                  <p class="libro-editorial">{{ libro.editorial }}</p>
+
+                  <!-- Botones según rol -->
+                  @if (esEstudiante() && libro.disponible !== false) {
+                    <ion-button
+                      expand="block" size="small"
+                      color="primary" fill="solid"
+                      (click)="$event.stopPropagation(); reservar(libro)">
+                      Reservar
+                    </ion-button>
+                  }
+                  @if (esAdminOBibliotecario()) {
+                    <div class="admin-btns">
+                      <ion-button size="small" fill="clear" color="primary"
+                        (click)="abrirPickerPortada($event, libro)"
+                        title="Cambiar portada">
+                        <ion-icon slot="icon-only" name="camera-outline"></ion-icon>
+                      </ion-button>
+                      <ion-button size="small" fill="clear" color="secondary"
+                        [routerLink]="['/libros', libro.idLibro, 'editar']"
+                        (click)="$event.stopPropagation()">
+                        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                      </ion-button>
+                      <ion-button size="small" fill="clear" color="danger"
+                        (click)="$event.stopPropagation(); eliminar(libro)">
+                        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                      </ion-button>
+                    </div>
+                  }
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          }
+        </ion-row>
+      </ion-grid>
+    }
+  }
+
+  <!-- Input oculto para selección de portada -->
+  <input
+    #portadaInput
+    type="file"
+    accept="image/jpeg,image/jpg,image/png,image/webp"
+    style="display:none"
+    (change)="onPortadaSeleccionada($event)" />
+
+  <!-- FAB solo para admin/bibliotecario -->
+  @if (esAdminOBibliotecario()) {
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button routerLink="/libros/nuevo">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+</ion-content>

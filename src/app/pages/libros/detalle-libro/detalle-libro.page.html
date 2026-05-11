@@ -1,0 +1,100 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/libros" text="Libros"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle del Libro</ion-title>
+    @if (esAdminOBibliotecario() && libro) {
+      <ion-buttons slot="end">
+        <ion-button fill="clear" [routerLink]="['/libros', libro.idLibro, 'editar']">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  @if (loading) {
+    <div class="detalle-container">
+      <ion-skeleton-text animated style="width:100%;height:300px;border-radius:0"></ion-skeleton-text>
+      <div style="padding:16px">
+        <ion-skeleton-text animated style="width:80%;height:1.5rem;margin-bottom:12px"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width:50%;height:1rem;margin-bottom:8px"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width:90%;height:4rem"></ion-skeleton-text>
+      </div>
+    </div>
+  }
+
+  @if (!loading && libro) {
+    <!-- Portada grande -->
+    <div class="portada-grande">
+      @if (portadaUrl) {
+        <img [src]="portadaUrl" [alt]="libro.titulo" />
+      } @else {
+        <div class="portada-placeholder-grande">
+          <ion-icon name="book-outline"></ion-icon>
+        </div>
+      }
+    </div>
+
+    <!-- Información del libro -->
+    <div class="detalle-info">
+      <div class="titulo-row">
+        <h1 class="libro-titulo">{{ libro.titulo }}</h1>
+        <ion-badge [class]="libro.disponible === false ? 'badge-rechazada' : 'badge-aprobada'">
+          {{ libro.disponible === false ? 'No disponible' : 'Disponible' }}
+        </ion-badge>
+      </div>
+
+      <p class="editorial">{{ libro.editorial }} · {{ libro.anioPublicacion }}</p>
+
+      @if (libro.isbn) {
+        <p class="isbn">ISBN: {{ libro.isbn }}</p>
+      }
+
+      @if (libro.descripcion) {
+        <div class="descripcion-section">
+          <h3>Descripción</h3>
+          <p>{{ libro.descripcion }}</p>
+        </div>
+      }
+
+      <!-- Acciones -->
+      <div class="acciones">
+        @if (esEstudiante() && libro.disponible !== false) {
+          <ion-button expand="block" color="primary" size="large" (click)="reservar()">
+            <ion-icon slot="start" name="calendar-outline"></ion-icon>
+            Reservar este libro
+          </ion-button>
+        }
+        @if (esAdminOBibliotecario()) {
+          <ion-button expand="block" color="secondary" fill="outline"
+            [routerLink]="['/libros', libro.idLibro, 'editar']">
+            <ion-icon slot="start" name="create-outline"></ion-icon>
+            Editar datos
+          </ion-button>
+          <ion-button expand="block" color="danger" fill="outline" (click)="eliminar()">
+            <ion-icon slot="start" name="trash-outline"></ion-icon>
+            Eliminar
+          </ion-button>
+        }
+      </div>
+
+      <!-- Cambiar portada (solo admin/bibliotecario) -->
+      @if (esAdminOBibliotecario()) {
+        <div class="cambiar-portada">
+          <p class="cambiar-portada-titulo">Cambiar portada</p>
+          <app-image-picker
+            tipo="libro"
+            [id]="libro.idLibro"
+            (imagenSubida)="onPortadaCambiada()">
+          </app-image-picker>
+          <p class="cambiar-portada-hint">Toca la imagen para seleccionar una nueva portada</p>
+        </div>
+      }
+    </div>
+  }
+
+</ion-content>

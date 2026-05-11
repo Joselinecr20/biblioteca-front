@@ -1,0 +1,63 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-wrapper">
+
+    <!-- Logo / Encabezado -->
+    <div class="login-header">
+      <ion-icon name="library-outline"></ion-icon>
+      <h1>Biblioteca</h1>
+      <p>Sistema de Gestión Universitaria</p>
+    </div>
+
+    <!-- Tarjeta de login -->
+    <ion-card class="login-card">
+      <ion-card-content>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <!-- Campo usuario -->
+          <ion-item class="input-item">
+            <ion-icon name="person-outline" slot="start" color="medium"></ion-icon>
+            <ion-label position="floating">Usuario</ion-label>
+            <ion-input
+              type="text"
+              formControlName="usuario"
+              autocomplete="username"
+              clearInput>
+            </ion-input>
+          </ion-item>
+          @if (u?.invalid && u?.touched) {
+            <p class="field-error">El usuario es requerido.</p>
+          }
+
+          <!-- Campo contraseña -->
+          <ion-item class="input-item">
+            <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
+            <ion-label position="floating">Contraseña</ion-label>
+            <ion-input
+              type="password"
+              formControlName="password"
+              autocomplete="current-password">
+            </ion-input>
+          </ion-item>
+          @if (p?.invalid && p?.touched) {
+            <p class="field-error">Mínimo 4 caracteres.</p>
+          }
+
+          <!-- Botón de ingreso -->
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="loading"
+            class="submit-btn">
+            @if (loading) {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              Ingresar
+            }
+          </ion-button>
+
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>

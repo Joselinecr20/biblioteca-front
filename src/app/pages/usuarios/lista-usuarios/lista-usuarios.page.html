@@ -1,0 +1,87 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Usuarios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" routerLink="/usuarios/nuevo">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-searchbar
+      placeholder="Buscar por nombre o correo..."
+      (ionInput)="buscar($event)"
+      animated [debounce]="300">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <ion-list>
+      @for (i of [1,2,3,4,5]; track i) {
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-avatar>
+          <ion-label>
+            <ion-skeleton-text animated style="width:60%;height:1rem;margin-bottom:6px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width:80%;height:0.8rem"></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  @if (!loading) {
+    @if (filtered.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="people-outline"></ion-icon>
+        <h3>No hay usuarios</h3>
+        <p>No se encontraron resultados</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (u of filtered; track u.idUsuario) {
+          <ion-item [routerLink]="['/usuarios', u.idUsuario, 'editar']" detail>
+            <ion-avatar slot="start">
+              @if (u.fotoUrl) {
+                <img [src]="u.fotoUrl" [alt]="u.nombre" />
+              } @else {
+                <div class="avatar-initials">{{ iniciales(u) }}</div>
+              }
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ u.nombre }} {{ u.apellido }}</h2>
+              <p>{{ u.correo }}</p>
+              @if (u.telefono) {
+                <ion-note>{{ u.telefono }}</ion-note>
+              }
+            </ion-label>
+            <div slot="end" class="user-status">
+              @if (u.rol) {
+                <ion-badge color="tertiary" style="margin-bottom:4px;display:block">{{ u.rol }}</ion-badge>
+              }
+              <ion-badge [class]="u.activo ? 'badge-aprobada' : 'badge-rechazada'">
+                {{ u.activo ? 'Activo' : 'Inactivo' }}
+              </ion-badge>
+            </div>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button routerLink="/usuarios/nuevo">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

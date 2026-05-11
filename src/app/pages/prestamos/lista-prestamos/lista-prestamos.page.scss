@@ -1,0 +1,30 @@
+.prestamo-item {
+  --background: #fff;
+  margin: 4px 8px;
+  border-radius: 10px;
+  align-items: flex-start;
+
+  ion-label {
+    padding: 8px 0;
+
+    h2 {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+    .titulo-libro { font-weight: 500; color: var(--color-primary); font-size: 0.9rem; }
+    p { font-size: 0.82rem; color: #555; margin: 2px 0; }
+    ion-note { font-size: 0.78rem; }
+    .devuelto-date { color: var(--ion-color-success); }
+  }
+
+  ion-button[slot="end"] {
+    --border-radius: 8px;
+    margin: 8px 0;
+    align-self: center;
+  }
+}

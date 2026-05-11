@@ -1,0 +1,116 @@
+.picker-wrapper {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8e3dc;
+  user-select: none;
+  transition: box-shadow 0.2s;
+
+  // ── Modo usuario: círculo ──────────────────────────
+  &.circular {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--color-primary);
+    margin: 0 auto;
+  }
+
+  // ── Modo libro: rectángulo tipo portada ───────────
+  &.rectangular {
+    width: 140px;
+    height: 200px;
+    border-radius: 12px;
+    border: 2px dashed var(--color-accent);
+    margin: 0 auto;
+  }
+
+  // ── Deshabilitado (sin id) ─────────────────────────
+  &.disabled {
+    cursor: default;
+    opacity: 0.65;
+    filter: grayscale(0.3);
+  }
+
+  &:not(.disabled):hover {
+    box-shadow: 0 4px 20px rgba(47, 93, 80, 0.25);
+
+    .picker-overlay { opacity: 1; }
+  }
+
+  // ── Imagen ─────────────────────────────────────────
+  .picker-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  // ── Placeholder sin imagen ─────────────────────────
+  .picker-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    width: 100%;
+    height: 100%;
+
+    ion-icon {
+      font-size: 2.6rem;
+      color: var(--color-accent);
+      opacity: 0.7;
+    }
+
+    span {
+      font-size: 0.7rem;
+      color: #999;
+      text-align: center;
+      line-height: 1.3;
+    }
+  }
+
+  // ── Overlay de cámara ──────────────────────────────
+  .picker-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.42);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+
+    &.visible { opacity: 1; }
+
+    ion-icon {
+      font-size: 2rem;
+      color: #fff;
+    }
+
+    ion-spinner {
+      color: #fff;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  // ── Etiqueta de modo deshabilitado ─────────────────
+  .picker-disabled-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 4px;
+    text-align: center;
+
+    span {
+      font-size: 0.62rem;
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
+}

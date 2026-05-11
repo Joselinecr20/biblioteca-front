@@ -1,0 +1,40 @@
+<div
+  class="picker-wrapper"
+  [class.circular]="tipo === 'usuario'"
+  [class.rectangular]="tipo === 'libro'"
+  [class.disabled]="id === 0"
+  (click)="seleccionar()"
+  [attr.title]="id === 0 ? 'Guarda primero para subir imagen' : 'Haz clic para cambiar imagen'">
+
+  <!-- Imagen desde endpoint o preview local -->
+  @if (imagenVisible) {
+    <img [src]="imagenVisible" alt="Imagen" class="picker-img" (error)="onImgError()" />
+  } @else {
+    <div class="picker-placeholder">
+      <ion-icon [name]="tipo === 'usuario' ? 'person-outline' : 'image-outline'"></ion-icon>
+      <span>{{ tipo === 'usuario' ? 'Foto de perfil' : 'Sin portada' }}</span>
+    </div>
+  }
+
+  <!-- Overlay con ícono de cámara / spinner -->
+  <div class="picker-overlay" [class.visible]="subiendo">
+    @if (subiendo) {
+      <ion-spinner name="crescent"></ion-spinner>
+    } @else {
+      <ion-icon name="camera-outline"></ion-icon>
+    }
+  </div>
+
+  @if (id === 0) {
+    <div class="picker-disabled-label">
+      <span>Disponible al editar</span>
+    </div>
+  }
+
+  <input
+    type="file"
+    #fileInput
+    accept=".jpg,.jpeg,.png,.webp"
+    (change)="onFileSelected($event)"
+    style="display:none" />
+</div>

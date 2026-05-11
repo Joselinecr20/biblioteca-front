@@ -1,0 +1,55 @@
+.perfil-hero {
+  background: linear-gradient(160deg, var(--color-primary) 0%, #3d7a68 100%);
+  padding: 40px 20px 28px;
+  text-align: center;
+  color: #fff;
+
+  .foto-wrapper {
+    margin-bottom: 16px;
+
+    // Sombra para el picker circular
+    app-image-picker {
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.25));
+    }
+  }
+
+  .perfil-nombre {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: #fff;
+  }
+
+  .perfil-rol {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: var(--color-accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-radius: 12px;
+    padding: 3px 12px;
+    margin-bottom: 10px;
+  }
+
+  .perfil-hint {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.65);
+    margin: 4px 0 0;
+  }
+}
+
+.perfil-card {
+  margin: 16px 12px 0;
+
+  ion-item {
+    --background: transparent;
+    --border-color: rgba(0,0,0,0.06);
+    padding: 4px 0;
+
+    ion-label {
+      p   { font-size: 0.75rem; color: #999; margin-bottom: 2px; }
+      h3  { font-size: 0.95rem; color: var(--color-dark); font-weight: 600; }
+    }
+  }
+}

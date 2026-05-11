@@ -1,0 +1,72 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mi Espacio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="welcome-banner">
+    <h2>Hola, {{ nombre }}</h2>
+    <p>Estudiante</p>
+  </div>
+
+  <!-- Botón destacado: Buscar libros -->
+  <div class="search-btn-container">
+    <ion-button expand="block" color="secondary" size="large" routerLink="/libros" class="search-main-btn">
+      <ion-icon slot="start" name="book-outline"></ion-icon>
+      Explorar Catálogo de Libros
+    </ion-button>
+  </div>
+
+  <div class="section-header">Mi Resumen</div>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="stat-card" routerLink="/prestamos/mis">
+          <ion-card-content>
+            <ion-icon name="receipt-outline" color="tertiary"></ion-icon>
+            @if (loading) {
+              <ion-skeleton-text animated style="width:60%;height:2rem;margin:8px auto"></ion-skeleton-text>
+            } @else {
+              <span class="stat-number">{{ stats.prestamosActivos }}</span>
+            }
+            <span class="stat-label">Préstamos Activos</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card" routerLink="/reservas/mis">
+          <ion-card-content>
+            <ion-icon name="calendar-outline" color="warning"></ion-icon>
+            @if (loading) {
+              <ion-skeleton-text animated style="width:60%;height:2rem;margin:8px auto"></ion-skeleton-text>
+            } @else {
+              <span class="stat-number">{{ stats.reservas }}</span>
+            }
+            <span class="stat-label">Reservas Pendientes</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12">
+        <ion-card class="stat-card" routerLink="/multas/mis">
+          <ion-card-content>
+            <ion-icon name="cash-outline" color="danger"></ion-icon>
+            @if (loading) {
+              <ion-skeleton-text animated style="width:60%;height:2rem;margin:8px auto"></ion-skeleton-text>
+            } @else {
+              <span class="stat-number">{{ stats.multasPendientes }}</span>
+            }
+            <span class="stat-label">Multas Pendientes</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

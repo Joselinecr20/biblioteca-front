@@ -1,0 +1,82 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/libros" text="Cancelar"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditing ? 'Editar Libro' : 'Nuevo Libro' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="guardar()" [disabled]="loading">
+        @if (loading) {
+          <ion-spinner name="crescent" slot="icon-only"></ion-spinner>
+        } @else {
+          Guardar
+        }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
+
+    <ion-item>
+      <ion-label position="floating">Título <span class="req">*</span></ion-label>
+      <ion-input type="text" formControlName="titulo"></ion-input>
+    </ion-item>
+    @if (f['titulo'].invalid && f['titulo'].touched) {
+      <p class="field-error">El título es requerido.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Editorial <span class="req">*</span></ion-label>
+      <ion-input type="text" formControlName="editorial"></ion-input>
+    </ion-item>
+    @if (f['editorial'].invalid && f['editorial'].touched) {
+      <p class="field-error">La editorial es requerida.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Año de publicación <span class="req">*</span></ion-label>
+      <ion-input type="number" formControlName="anioPublicacion" min="1000" max="2100"></ion-input>
+    </ion-item>
+    @if (f['anioPublicacion'].invalid && f['anioPublicacion'].touched) {
+      <p class="field-error">Ingrese un año válido.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">ISBN <span class="req">*</span></ion-label>
+      <ion-input type="text" formControlName="isbn"></ion-input>
+    </ion-item>
+    @if (f['isbn'].invalid && f['isbn'].touched) {
+      <p class="field-error">El ISBN es requerido.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Categoría <span class="req">*</span></ion-label>
+      <ion-select formControlName="idCategoria" interface="action-sheet" placeholder="Seleccione">
+        @for (cat of categorias; track cat.id) {
+          <ion-select-option [value]="cat.id">{{ cat.nombre }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    @if (f['idCategoria'].invalid && f['idCategoria'].touched) {
+      <p class="field-error">Seleccione una categoría.</p>
+    }
+
+    <ion-item>
+      <ion-label position="floating">Descripción</ion-label>
+      <ion-textarea formControlName="descripcion" rows="5" auto-grow></ion-textarea>
+    </ion-item>
+
+    <div class="form-actions">
+      <ion-button expand="block" type="submit" color="primary" [disabled]="loading">
+        @if (loading) { <ion-spinner name="crescent"></ion-spinner> }
+        @else { {{ isEditing ? 'Actualizar Libro' : 'Crear Libro' }} }
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="medium" (click)="cancelar()">
+        Cancelar
+      </ion-button>
+    </div>
+
+  </form>
+</ion-content>

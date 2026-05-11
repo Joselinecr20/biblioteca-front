@@ -1,0 +1,82 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mis Préstamos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading) {
+    <ion-list>
+      @for (i of [1,2,3]; track i) {
+        <ion-item>
+          <ion-label>
+            <ion-skeleton-text animated style="width:70%;height:1rem;margin-bottom:6px"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width:50%;height:0.8rem"></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  @if (!loading) {
+    @if (prestamos.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="receipt-outline"></ion-icon>
+        <h3>Sin préstamos activos</h3>
+        <p>No tienes préstamos en este momento</p>
+      </div>
+    } @else {
+      <ion-list>
+        @for (p of prestamos; track p.idPrestamo) {
+
+          <!-- Alerta: próximo a vencer -->
+          @if (estaPorVencer(p)) {
+            <div class="alerta-vencimiento">
+              <ion-icon name="warning-outline"></ion-icon>
+              ¡Este préstamo vence en {{ diasRestantes(p.fechaDevolucion) }} día(s)!
+            </div>
+          }
+
+          <!-- Alerta: retrasado -->
+          @if (estaRetrasado(p)) {
+            <div class="alerta-retrasado">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              ¡Este préstamo está retrasado {{ diasRestantes(p.fechaDevolucion) * -1 }} día(s)!
+            </div>
+          }
+
+          <ion-item class="prestamo-card">
+            <ion-label>
+              <h2>
+                Préstamo #{{ p.idPrestamo }}
+                <ion-badge [class]="badgeClass(p)">{{ badgeLabel(p) }}</ion-badge>
+              </h2>
+              @if (p.tituloLibro) { <p class="titulo-libro">{{ p.tituloLibro }}</p> }
+              <ion-note>Prestado: {{ p.fechaPrestamo | date:'dd/MM/yyyy' }}</ion-note>
+              <ion-note> · Devolver: {{ p.fechaDevolucion | date:'dd/MM/yyyy' }}</ion-note>
+              @if (p.estado === 'activo') {
+                <p class="dias-restantes"
+                  [class.urgente]="diasRestantes(p.fechaDevolucion) <= 3">
+                  @if (diasRestantes(p.fechaDevolucion) >= 0) {
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ diasRestantes(p.fechaDevolucion) }} día(s) restante(s)
+                  } @else {
+                    <ion-icon name="alert-circle-outline"></ion-icon>
+                    {{ diasRestantes(p.fechaDevolucion) * -1 }} día(s) de retraso
+                  }
+                </p>
+              }
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  }
+</ion-content>
