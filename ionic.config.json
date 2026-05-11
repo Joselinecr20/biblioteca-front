@@ -1,0 +1,7 @@
+{
+  "name": "sistemaBiblioteca",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
