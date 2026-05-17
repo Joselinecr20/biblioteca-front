@@ -5,7 +5,7 @@ import { TitleCasePipe } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonBackButton, IonButton, IonItem, IonLabel, IonInput,
-  IonSelect, IonSelectOption, IonSpinner, IonToggle,
+  IonSelect, IonSelectOption, IonSpinner, IonToggle, IonNote,
   ToastController,
 } from '@ionic/angular/standalone';
 import { UsuarioService } from '../../../core/services/usuario.service';
@@ -20,7 +20,7 @@ import { ImagePickerComponent } from '../../../shared/components/image-picker/im
     ReactiveFormsModule, TitleCasePipe,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
     IonBackButton, IonButton, IonItem, IonLabel, IonInput,
-    IonSelect, IonSelectOption, IonSpinner, IonToggle,
+    IonSelect, IonSelectOption, IonSpinner, IonToggle, IonNote,
     ImagePickerComponent,
   ],
 })

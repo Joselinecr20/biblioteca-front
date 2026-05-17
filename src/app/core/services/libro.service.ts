@@ -27,6 +27,10 @@ export class LibroService {
     return this.http.put<any>(`${this.API}/${id}`, libro).pipe(map(r => r.data ?? r));
   }
 
+  setStock(id: number, items: { idBiblioteca: number; cantidadTotal: number }[]): Observable<Libro> {
+    return this.http.put<any>(`${this.API}/${id}/stock`, { items }).pipe(map(r => r.data ?? r));
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`);
   }

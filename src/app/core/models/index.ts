@@ -13,6 +13,13 @@ export interface LoginResponse {
   apellido: string;
 }
 
+export interface BibliotecaDisponible {
+  idBiblioteca: number;
+  nombre: string;
+  cantidadDisponible: number;
+  cantidadTotal?: number;
+}
+
 export interface Libro {
   idLibro: number;
   titulo: string;
@@ -22,7 +29,9 @@ export interface Libro {
   portadaUrl: string;
   isbn: string;
   idCategoria: number;
+  cantidadDisponible?: number;
   disponible?: boolean;
+  bibliotecas?: BibliotecaDisponible[];
 }
 
 export interface Usuario {

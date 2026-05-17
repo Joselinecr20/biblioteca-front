@@ -4,10 +4,10 @@ import {
   IonMenuButton, IonList, IonItem, IonLabel, IonBadge,
   IonButton, IonIcon, IonSkeletonText, IonRefresher, IonRefresherContent,
   IonNote,
-  AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { DatePipe } from '@angular/common';
 import { PrestamoService } from '../../../core/services/prestamo.service';
+import { SwalService }     from '../../../core/services/swal.service';
 import { Prestamo } from '../../../core/models';
 
 @Component({
@@ -29,8 +29,7 @@ export class ListaPrestamosPage implements OnInit {
 
   constructor(
     private prestamoService: PrestamoService,
-    private alertCtrl:       AlertController,
-    private toastCtrl:       ToastController,
+    private swal:            SwalService,
   ) {}
 
   ngOnInit() { this.cargar(); }
@@ -43,47 +42,28 @@ export class ListaPrestamosPage implements OnInit {
         this.loading   = false;
         event?.target?.complete();
       },
-      error: async () => {
+      error: () => {
         this.loading = false;
         event?.target?.complete();
-        (await this.toastCtrl.create({
-          message: 'Error al cargar préstamos', duration: 3000, color: 'danger', position: 'top',
-        })).present();
+        this.swal.toast('Error al cargar préstamos', 'error');
       },
     });
   }
 
   async registrarDevolucion(p: Prestamo) {
-    const alert = await this.alertCtrl.create({
-      cssClass:  'biblioteca-alert',
-      header:    'Registrar Devolución',
-      subHeader: p.tituloLibro ?? `Préstamo #${p.idPrestamo}`,
-      message:   '¿Confirmar la devolución de este libro?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Confirmar',
-          cssClass: 'alert-confirm',
-          handler: () => {
-            this.prestamoService.devolver(p.idPrestamo).subscribe({
-              next: async (updated) => {
-                const idx = this.prestamos.findIndex(x => x.idPrestamo === p.idPrestamo);
-                if (idx !== -1) this.prestamos[idx] = updated;
-                (await this.toastCtrl.create({
-                  message: 'Devolución registrada', duration: 3000, color: 'success', position: 'top',
-                })).present();
-              },
-              error: async () => {
-                (await this.toastCtrl.create({
-                  message: 'Error al registrar la devolución', duration: 3000, color: 'danger', position: 'top',
-                })).present();
-              },
-            });
-          },
-        },
-      ],
+    const html = `<p class="swal-subtitulo">${p.tituloLibro ?? `Préstamo #${p.idPrestamo}`}</p>
+                  <p>¿Confirmar la devolución de este libro?</p>`;
+    const { isConfirmed } = await this.swal.confirm('Registrar Devolución', html, 'Confirmar');
+    if (!isConfirmed) return;
+
+    this.prestamoService.devolver(p.idPrestamo).subscribe({
+      next: (updated) => {
+        const idx = this.prestamos.findIndex(x => x.idPrestamo === p.idPrestamo);
+        if (idx !== -1) this.prestamos[idx] = updated;
+        this.swal.success('Devolución registrada');
+      },
+      error: (err) => this.swal.error('Error al registrar', err?.error?.message || 'No se pudo registrar la devolución.'),
     });
-    await alert.present();
   }
 
   estaRetrasado(p: Prestamo): boolean {

@@ -50,7 +50,7 @@ export class MisMultasPage implements OnInit {
         this.loading = false;
         event?.target?.complete();
         (await this.toastCtrl.create({
-          message: 'Error al cargar tus multas', duration: 3000, color: 'danger', position: 'top',
+          message: 'Error al cargar sus multas', duration: 3000, color: 'danger', position: 'top',
         })).present();
       },
     });

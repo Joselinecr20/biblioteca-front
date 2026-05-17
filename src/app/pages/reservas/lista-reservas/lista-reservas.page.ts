@@ -4,10 +4,10 @@ import {
   IonMenuButton, IonList, IonItem, IonLabel, IonBadge,
   IonButton, IonIcon, IonSkeletonText, IonRefresher, IonRefresherContent,
   IonNote,
-  AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { ReservaService } from '../../../core/services/reserva.service';
+import { SwalService }    from '../../../core/services/swal.service';
 import { Reserva } from '../../../core/models';
 
 @Component({
@@ -29,8 +29,7 @@ export class ListaReservasPage implements OnInit {
 
   constructor(
     private reservaService: ReservaService,
-    private alertCtrl:      AlertController,
-    private toastCtrl:      ToastController,
+    private swal:           SwalService,
   ) {}
 
   ngOnInit() { this.cargar(); }
@@ -43,78 +42,45 @@ export class ListaReservasPage implements OnInit {
         this.loading  = false;
         event?.target?.complete();
       },
-      error: async () => {
+      error: () => {
         this.loading = false;
         event?.target?.complete();
-        (await this.toastCtrl.create({
-          message: 'Error al cargar reservas', duration: 3000, color: 'danger', position: 'top',
-        })).present();
+        this.swal.toast('Error al cargar reservas', 'error');
       },
     });
   }
 
   async aprobar(r: Reserva) {
-    const alert = await this.alertCtrl.create({
-      cssClass:  'biblioteca-alert',
-      header:    'Aprobar Reserva',
-      subHeader: r.tituloLibro ?? `Reserva #${r.idReserva}`,
-      message:   r.diasPrestamo ? `Plazo solicitado: ${r.diasPrestamo} días` : '¿Aprobar esta reserva?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Aprobar',
-          cssClass: 'alert-confirm',
-          handler: () => {
-            this.reservaService.aprobar(r.idReserva).subscribe({
-              next: async () => {
-                r.estado = 'aprobada';
-                (await this.toastCtrl.create({
-                  message: 'Reserva aprobada', duration: 3000, color: 'success', position: 'top',
-                })).present();
-              },
-              error: async () => {
-                (await this.toastCtrl.create({
-                  message: 'Error al aprobar la reserva', duration: 3000, color: 'danger', position: 'top',
-                })).present();
-              },
-            });
-          },
-        },
-      ],
+    const detalle = r.diasPrestamo
+      ? `<strong>${r.diasPrestamo} días solicitados</strong>`
+      : '¿Aprobar esta reserva?';
+    const html = `<p class="swal-subtitulo">${r.tituloLibro ?? `Reserva #${r.idReserva}`}</p><p>${detalle}</p>`;
+
+    const { isConfirmed } = await this.swal.confirm('Aprobar Reserva', html, 'Aprobar');
+    if (!isConfirmed) return;
+
+    this.reservaService.aprobar(r.idReserva).subscribe({
+      next: () => {
+        r.estado = 'aprobada';
+        this.swal.success('Reserva aprobada');
+      },
+      error: (err) => this.swal.error('No se pudo aprobar', err?.error?.message || 'Intenta nuevamente.'),
     });
-    await alert.present();
   }
 
   async rechazar(r: Reserva) {
-    const alert = await this.alertCtrl.create({
-      cssClass:  'biblioteca-alert',
-      header:    'Rechazar Reserva',
-      subHeader: r.tituloLibro ?? `Reserva #${r.idReserva}`,
-      message:   '¿Rechazar esta solicitud de reserva?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Rechazar',
-          cssClass: 'alert-danger',
-          handler: () => {
-            this.reservaService.rechazar(r.idReserva).subscribe({
-              next: async () => {
-                r.estado = 'rechazada';
-                (await this.toastCtrl.create({
-                  message: 'Reserva rechazada', duration: 3000, color: 'warning', position: 'top',
-                })).present();
-              },
-              error: async () => {
-                (await this.toastCtrl.create({
-                  message: 'Error al rechazar la reserva', duration: 3000, color: 'danger', position: 'top',
-                })).present();
-              },
-            });
-          },
-        },
-      ],
+    const html = `<p class="swal-subtitulo">${r.tituloLibro ?? `Reserva #${r.idReserva}`}</p>
+                  <p>¿Rechazar esta solicitud de reserva?</p>`;
+    const { isConfirmed } = await this.swal.danger('Rechazar Reserva', html, 'Rechazar');
+    if (!isConfirmed) return;
+
+    this.reservaService.rechazar(r.idReserva).subscribe({
+      next: () => {
+        r.estado = 'rechazada';
+        this.swal.success('Reserva rechazada');
+      },
+      error: (err) => this.swal.error('No se pudo rechazar', err?.error?.message || 'Intenta nuevamente.'),
     });
-    await alert.present();
   }
 
   badgeClass(estado: string): string {

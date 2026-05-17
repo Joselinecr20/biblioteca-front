@@ -4,10 +4,10 @@ import {
   IonMenuButton, IonList, IonItem, IonLabel, IonBadge,
   IonIcon, IonSkeletonText, IonRefresher, IonRefresherContent,
   IonNote, IonCard, IonCardContent,
-  ToastController,
 } from '@ionic/angular/standalone';
 import { DatePipe } from '@angular/common';
 import { PrestamoService } from '../../../core/services/prestamo.service';
+import { SwalService }     from '../../../core/services/swal.service';
 import { Prestamo } from '../../../core/models';
 
 @Component({
@@ -29,7 +29,7 @@ export class MisPrestamosPage implements OnInit {
 
   constructor(
     private prestamoService: PrestamoService,
-    private toastCtrl:       ToastController,
+    private swal:            SwalService,
   ) {}
 
   ngOnInit() { this.cargar(); }
@@ -42,12 +42,10 @@ export class MisPrestamosPage implements OnInit {
         this.loading   = false;
         event?.target?.complete();
       },
-      error: async () => {
+      error: () => {
         this.loading = false;
         event?.target?.complete();
-        (await this.toastCtrl.create({
-          message: 'Error al cargar tus préstamos', duration: 3000, color: 'danger', position: 'top',
-        })).present();
+        this.swal.toast('Error al cargar sus préstamos', 'error');
       },
     });
   }

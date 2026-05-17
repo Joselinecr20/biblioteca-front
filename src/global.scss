@@ -1,3 +1,6 @@
+/* SweetAlert2 — importado desde fuente SCSS para garantizar inclusión en bundle */
+@import 'sweetalert2/src/sweetalert2';
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 @import "@ionic/angular/css/normalize.css";
@@ -28,23 +31,33 @@ ion-toolbar {
   ion-icon { color: #ffffff; }
 }
 
-// Cards con sombra suave
+// Cards con sombra suave y borde acento
 ion-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(47, 93, 80, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(47, 93, 80, 0.12);
   --background: #ffffff;
   margin: 8px;
+  border-left: 4px solid var(--color-accent);
 }
 
-// Badges de estado
-.badge-pendiente  { --background: #ffc409; --color: #000; }
-.badge-aprobada   { --background: #2dd36f; --color: #fff; }
+// Cards especiales sin borde lateral
+.stat-card,
+.login-card {
+  border-left: none;
+}
+
+// Badges de estado (chips semánticos)
+.badge-pendiente  { --background: #E07B3D; --color: #fff; }
+.badge-aprobada   { --background: #2F5D50; --color: #fff; }
 .badge-rechazada  { --background: #eb445a; --color: #fff; }
 .badge-cancelada  { --background: #92949c; --color: #fff; }
-.badge-activo     { --background: #2196f3; --color: #fff; }
-.badge-devuelto   { --background: #2dd36f; --color: #fff; }
+.badge-activo     { --background: #2F5D50; --color: #fff; }
+.badge-devuelto   { --background: #7A5C3E; --color: #fff; }
 .badge-retrasado  { --background: #eb445a; --color: #fff; }
-.badge-pagada     { --background: #2dd36f; --color: #fff; }
+.badge-pagada     { --background: #2F5D50; --color: #fff; }
+.badge-disponible { --background: #2F5D50; --color: #fff; }
+.badge-prestado   { --background: #E07B3D; --color: #fff; }
+.badge-vencido    { --background: #eb445a; --color: #fff; }
 
 // Stat cards en dashboards
 .stat-card {
@@ -166,11 +179,12 @@ ion-list {
 
 // Chips / badges de estado inline
 ion-badge {
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 // Inputs en formularios
@@ -195,113 +209,20 @@ ion-fab-button {
   margin: 4px 16px;
 }
 
-// ── Alerts personalizados ──────────────────────────────────
-.biblioteca-alert {
-  .alert-wrapper {
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 16px 48px rgba(47, 93, 80, 0.28);
-    background: #fff;
-    min-width: 300px;
-    max-width: 340px;
-  }
-
-  // Header con gradiente verde — igual que los toolbars
-  .alert-head {
-    background: linear-gradient(135deg, #2F5D50 0%, #3d7a68 100%);
-    padding: 22px 20px 16px;
-    text-align: center;
-
-    .alert-title {
-      color: #fff;
-      font-size: 1.08rem;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
-
-    .alert-sub-title {
-      color: rgba(255, 255, 255, 0.82);
-      font-size: 0.83rem;
-      margin-top: 5px;
-      font-style: italic;
-      line-height: 1.4;
-    }
-  }
-
-  // Mensaje centrado
-  .alert-message {
-    text-align: center;
-    color: #555;
-    font-size: 0.88rem;
-    line-height: 1.6;
-    padding: 16px 22px 4px;
-  }
-
-  // Radios para selección de días
-  .alert-radio-group {
-    border-top: 1px solid #ede8df;
-    border-bottom: 1px solid #ede8df;
-    padding: 4px 0;
-
-    .alert-radio-button {
-      --color: #888;
-
-      .alert-radio-label { font-size: 0.9rem; }
-
-      &[aria-checked=true] {
-        --color: var(--color-primary);
-        .alert-radio-label { color: var(--color-primary); font-weight: 600; }
-        .alert-radio-inner { border-color: var(--color-primary); background: var(--color-primary); }
-      }
-    }
-  }
-
-  // Botones apilados verticalmente — asimétricos
-  .alert-button-group {
-    flex-direction: column !important;
-    padding: 14px 18px 18px;
-    gap: 8px;
-
-    .alert-button {
-      width: 100%;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      margin: 0;
-      border: none;
-
-      .alert-button-inner { justify-content: center; }
-
-      // Cancelar: fantasma pequeño — poca jerarquía
-      &.alert-button-role-cancel {
-        background: transparent;
-        color: #aaa;
-        font-weight: 500;
-        font-size: 0.82rem;
-        min-height: 34px;
-        text-decoration: underline;
-        text-underline-offset: 2px;
-      }
-
-      // Acción principal: sólido y grande
-      &:not(.alert-button-role-cancel) {
-        min-height: 46px;
-        font-weight: 700;
-        letter-spacing: 0.2px;
-      }
-    }
-  }
+// Jerarquía tipográfica
+ion-card-title {
+  font-weight: 700 !important;
+  color: var(--color-dark);
 }
 
-// Botón confirmar — verde sólido
-.alert-confirm {
-  background: #2F5D50 !important;
-  color: #fff !important;
-  order: -1; // aparece primero (encima del cancelar)
+ion-card-subtitle {
+  font-weight: 500 !important;
 }
 
-// Botón peligro — rojo sólido
-.alert-danger {
-  background: #eb445a !important;
-  color: #fff !important;
-  order: -1;
+ion-item {
+  h2 { font-weight: 700; font-size: 0.95rem; }
+  p  { font-size: 0.82rem; color: #555; }
 }
+
+// ── Alertas, Modales, Action Sheets y Toasts personalizados ──
+@import 'theme/global-alerts';

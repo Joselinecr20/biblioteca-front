@@ -4,10 +4,10 @@ import {
   IonMenuButton, IonList, IonItem, IonLabel, IonBadge,
   IonButton, IonIcon, IonSkeletonText, IonRefresher, IonRefresherContent,
   IonNote,
-  AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { ReservaService } from '../../../core/services/reserva.service';
+import { SwalService }    from '../../../core/services/swal.service';
 import { Reserva } from '../../../core/models';
 
 @Component({
@@ -29,8 +29,7 @@ export class MisReservasPage implements OnInit {
 
   constructor(
     private reservaService: ReservaService,
-    private alertCtrl:      AlertController,
-    private toastCtrl:      ToastController,
+    private swal:           SwalService,
   ) {}
 
   ngOnInit() { this.cargar(); }
@@ -43,45 +42,27 @@ export class MisReservasPage implements OnInit {
         this.loading  = false;
         event?.target?.complete();
       },
-      error: async () => {
+      error: () => {
         this.loading = false;
         event?.target?.complete();
-        (await this.toastCtrl.create({
-          message: 'Error al cargar tus reservas', duration: 3000, color: 'danger', position: 'top',
-        })).present();
+        this.swal.toast('Error al cargar sus reservas', 'error');
       },
     });
   }
 
   async cancelar(r: Reserva) {
-    const alert = await this.alertCtrl.create({
-      cssClass: 'biblioteca-alert',
-      header:   'Cancelar Reserva',
-      message:  '¿Desea cancelar esta reserva?',
-      buttons: [
-        { text: 'No', role: 'cancel' },
-        {
-          text: 'Sí, cancelar',
-          cssClass: 'alert-danger',
-          handler: () => {
-            this.reservaService.cancelar(r.idReserva).subscribe({
-              next: async () => {
-                this.reservas = this.reservas.filter(x => x.idReserva !== r.idReserva);
-                (await this.toastCtrl.create({
-                  message: 'Reserva cancelada', duration: 3000, color: 'success', position: 'top',
-                })).present();
-              },
-              error: async () => {
-                (await this.toastCtrl.create({
-                  message: 'Error al cancelar la reserva', duration: 3000, color: 'danger', position: 'top',
-                })).present();
-              },
-            });
-          },
-        },
-      ],
+    const html = `<p class="swal-subtitulo">${r.tituloLibro ?? `Reserva #${r.idReserva}`}</p>
+                  <p>¿Desea cancelar esta reserva?</p>`;
+    const { isConfirmed } = await this.swal.danger('Cancelar Reserva', html, 'Sí, cancelar');
+    if (!isConfirmed) return;
+
+    this.reservaService.cancelar(r.idReserva).subscribe({
+      next: () => {
+        this.reservas = this.reservas.filter(x => x.idReserva !== r.idReserva);
+        this.swal.success('Reserva cancelada');
+      },
+      error: (err) => this.swal.error('No se pudo cancelar', err?.error?.message || 'Intente nuevamente.'),
     });
-    await alert.present();
   }
 
   badgeClass(estado: string): string {

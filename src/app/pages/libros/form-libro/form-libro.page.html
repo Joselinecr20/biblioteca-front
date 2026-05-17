@@ -53,20 +53,58 @@
 
     <ion-item>
       <ion-label position="floating">Categoría <span class="req">*</span></ion-label>
-      <ion-select formControlName="idCategoria" interface="action-sheet" placeholder="Seleccione">
-        @for (cat of categorias; track cat.id) {
-          <ion-select-option [value]="cat.id">{{ cat.nombre }}</ion-select-option>
+      <ion-select formControlName="idCategoria" [compareWith]="compareById" interface="action-sheet" placeholder="Seleccione">
+        @for (cat of categorias; track cat.idCategoria) {
+          <ion-select-option [value]="cat.idCategoria">{{ cat.nombre }}</ion-select-option>
         }
       </ion-select>
     </ion-item>
     @if (f['idCategoria'].invalid && f['idCategoria'].touched) {
       <p class="field-error">Seleccione una categoría.</p>
     }
+    <div class="add-categoria">
+      <ion-button fill="clear" size="small" (click)="agregarCategoria()">+ Agregar</ion-button>
+      @if (categorias.length > 0) {
+        <ion-button fill="clear" size="small" color="medium" (click)="gestionarCategorias()">Gestionar</ion-button>
+      }
+    </div>
 
     <ion-item>
       <ion-label position="floating">Descripción</ion-label>
       <ion-textarea formControlName="descripcion" rows="5" auto-grow></ion-textarea>
     </ion-item>
+
+    <!-- Stock por Biblioteca -->
+    <div class="stock-section">
+      <div class="seccion-header">
+        <p class="stock-titulo">Ejemplares por Biblioteca</p>
+        <div class="seccion-acciones">
+          <ion-button fill="clear" size="small" (click)="agregarBiblioteca()">+ Agregar</ion-button>
+          @if (stockItems.length > 0) {
+            <ion-button fill="clear" size="small" color="medium" (click)="gestionarBibliotecas()">Gestionar</ion-button>
+          }
+        </div>
+      </div>
+    @if (stockItems.length > 0) {
+        @for (item of stockItems; track item.idBiblioteca) {
+          <ion-item>
+            <ion-label>{{ item.nombre }}</ion-label>
+            <ion-input
+              type="number"
+              slot="end"
+              [value]="item.cantidad"
+              (ionInput)="onStockInput(item, $event)"
+              min="0"
+              placeholder="0"
+              class="stock-input">
+            </ion-input>
+          </ion-item>
+        }
+        <ion-note class="stock-hint">
+          Ingrese la cantidad total de ejemplares disponibles en cada sede.
+        </ion-note>
+    }
+    </div>
 
     <div class="form-actions">
       <ion-button expand="block" type="submit" color="primary" [disabled]="loading">

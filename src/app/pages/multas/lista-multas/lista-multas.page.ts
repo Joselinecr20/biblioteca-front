@@ -4,10 +4,10 @@ import {
   IonMenuButton, IonList, IonItem, IonLabel, IonBadge,
   IonButton, IonIcon, IonSkeletonText, IonRefresher, IonRefresherContent,
   IonNote,
-  AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { DatePipe, CurrencyPipe, TitleCasePipe } from '@angular/common';
 import { MultaService } from '../../../core/services/multa.service';
+import { SwalService }  from '../../../core/services/swal.service';
 import { Multa } from '../../../core/models';
 
 @Component({
@@ -29,8 +29,7 @@ export class ListaMultasPage implements OnInit {
 
   constructor(
     private multaService: MultaService,
-    private alertCtrl:   AlertController,
-    private toastCtrl:   ToastController,
+    private swal:         SwalService,
   ) {}
 
   ngOnInit() { this.cargar(); }
@@ -43,47 +42,28 @@ export class ListaMultasPage implements OnInit {
         this.loading = false;
         event?.target?.complete();
       },
-      error: async () => {
+      error: () => {
         this.loading = false;
         event?.target?.complete();
-        (await this.toastCtrl.create({
-          message: 'Error al cargar multas', duration: 3000, color: 'danger', position: 'top',
-        })).present();
+        this.swal.toast('Error al cargar multas', 'error');
       },
     });
   }
 
   async registrarPago(m: Multa) {
-    const alert = await this.alertCtrl.create({
-      cssClass:  'biblioteca-alert',
-      header:    'Registrar Pago',
-      subHeader: `Monto: $${m.monto.toFixed(2)}`,
-      message:   '¿Confirmar el pago de esta multa?',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Confirmar Pago',
-          cssClass: 'alert-confirm',
-          handler: () => {
-            this.multaService.pagar(m.idMulta).subscribe({
-              next: async (updated) => {
-                const idx = this.multas.findIndex(x => x.idMulta === m.idMulta);
-                if (idx !== -1) this.multas[idx] = updated;
-                (await this.toastCtrl.create({
-                  message: 'Pago registrado exitosamente', duration: 3000, color: 'success', position: 'top',
-                })).present();
-              },
-              error: async () => {
-                (await this.toastCtrl.create({
-                  message: 'Error al registrar el pago', duration: 3000, color: 'danger', position: 'top',
-                })).present();
-              },
-            });
-          },
-        },
-      ],
+    const html = `<p class="swal-subtitulo">Monto: <strong>$${m.monto.toFixed(2)}</strong></p>
+                  <p>¿Confirmar el pago de esta multa?</p>`;
+    const { isConfirmed } = await this.swal.confirm('Registrar Pago', html, 'Confirmar Pago');
+    if (!isConfirmed) return;
+
+    this.multaService.pagar(m.idMulta).subscribe({
+      next: (updated) => {
+        const idx = this.multas.findIndex(x => x.idMulta === m.idMulta);
+        if (idx !== -1) this.multas[idx] = updated;
+        this.swal.success('Pago registrado exitosamente');
+      },
+      error: (err) => this.swal.error('Error al registrar', err?.error?.message || 'No se pudo registrar el pago.'),
     });
-    await alert.present();
   }
 
   doRefresh(event: any) { this.cargar(event); }

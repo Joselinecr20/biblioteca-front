@@ -4,12 +4,12 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonBackButton, IonCard, IonCardContent, IonBadge,
   IonButton, IonIcon, IonSkeletonText,
-  AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { LibroService }   from '../../../core/services/libro.service';
 import { ReservaService } from '../../../core/services/reserva.service';
 import { AuthService }    from '../../../core/services/auth.service';
 import { UploadService }  from '../../../core/services/upload.service';
+import { SwalService }    from '../../../core/services/swal.service';
 import { ImagePickerComponent } from '../../../shared/components/image-picker/image-picker.component';
 import { Libro } from '../../../core/models';
 
@@ -40,24 +40,21 @@ export class DetalleLibroPage implements OnInit {
     private reservaService: ReservaService,
     private auth:           AuthService,
     public  uploadService:  UploadService,
-    private alertCtrl:      AlertController,
-    private toastCtrl:      ToastController,
+    private swal:           SwalService,
   ) {}
 
   ngOnInit() {
     this.rol = this.auth.getRol();
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.libroService.getById(id).subscribe({
-      next:  (l)  => {
+      next:  (l) => {
         this.libro   = l;
         this.loading = false;
         this.cargarPortada(l.idLibro);
       },
-      error: async () => {
+      error: () => {
         this.loading = false;
-        (await this.toastCtrl.create({
-          message: 'Error al cargar el libro', duration: 3000, color: 'danger', position: 'top',
-        })).present();
+        this.swal.toast('Error al cargar el libro', 'error');
         this.router.navigate(['/libros']);
       },
     });
@@ -65,77 +62,46 @@ export class DetalleLibroPage implements OnInit {
 
   async reservar() {
     if (!this.libro) return;
-    const alert = await this.alertCtrl.create({
-      cssClass:  'biblioteca-alert',
-      header:    'Reservar Libro',
-      subHeader: this.libro.titulo,
-      message: '¿Cuántos días necesitas el libro?',
-      inputs: [
-        { type: 'radio', label: '3 días',  value: 3,  checked: true },
-        { type: 'radio', label: '7 días',  value: 7 },
-        { type: 'radio', label: '14 días', value: 14 },
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Reservar',
-          handler: (diasPrestamo: number) => {
-            this.reservaService.create({
-              idLibro: this.libro!.idLibro,
-              idBiblioteca: 1,
-              diasPrestamo,
-            }).subscribe({
-              next: async () => {
-                (await this.toastCtrl.create({
-                  message: `Reserva creada por ${diasPrestamo} días`, duration: 3000, color: 'success', position: 'top',
-                })).present();
-                this.router.navigate(['/reservas/mis']);
-              },
-              error: async (err) => {
-                (await this.toastCtrl.create({
-                  message: err?.error?.message || 'Error al crear reserva',
-                  duration: 3000, color: 'danger', position: 'top',
-                })).present();
-              },
-            });
-          },
-        },
-      ],
+
+    const bibliotecas = this.libro.bibliotecas ?? [];
+    if (bibliotecas.length === 0) {
+      this.swal.error('Sin disponibilidad', 'No hay ejemplares disponibles en ninguna biblioteca.');
+      return;
+    }
+
+    const idBiblioteca = await this.swal.selectBiblioteca(bibliotecas);
+    if (!idBiblioteca) return;
+
+    const diasPrestamo = await this.swal.selectDias(this.libro.titulo);
+    if (!diasPrestamo) return;
+
+    this.reservaService.create({
+      idLibro: this.libro.idLibro,
+      idBiblioteca,
+      diasPrestamo,
+    }).subscribe({
+      next: async () => {
+        await this.swal.success('¡Reserva creada!', `"${this.libro!.titulo}" reservado por ${diasPrestamo} días`);
+        this.router.navigate(['/reservas/mis']);
+      },
+      error: (err) => this.swal.error('Error al reservar', err?.error?.message || 'No se pudo crear la reserva.'),
     });
-    await alert.present();
   }
 
   async eliminar() {
     if (!this.libro) return;
-    const alert = await this.alertCtrl.create({
-      cssClass: 'biblioteca-alert',
-      header:   'Eliminar Libro',
-      message:  'Esta acción es permanente y no se puede deshacer.',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Eliminar',
-          cssClass: 'alert-danger',
-          handler: () => {
-            this.libroService.delete(this.libro!.idLibro).subscribe({
-              next: async () => {
-                (await this.toastCtrl.create({
-                  message: 'Libro eliminado', duration: 3000, color: 'success', position: 'top',
-                })).present();
-                this.router.navigate(['/libros']);
-              },
-              error: async () => {
-                (await this.toastCtrl.create({
-                  message: 'Error al eliminar el libro',
-                  duration: 3000, color: 'danger', position: 'top',
-                })).present();
-              },
-            });
-          },
-        },
-      ],
+    const html = `<p class="swal-subtitulo">${this.libro.titulo}</p>
+                  <p>Esta acción es permanente y no se puede deshacer.</p>`;
+    const { isConfirmed } = await this.swal.danger('Eliminar Libro', html, 'Eliminar');
+    if (!isConfirmed) return;
+
+    this.libroService.delete(this.libro.idLibro).subscribe({
+      next: async () => {
+        await this.swal.success('Libro eliminado');
+        this.router.navigate(['/libros']);
+      },
+      error: (err) => this.swal.error('Error al eliminar', err?.error?.message || 'No se pudo eliminar el libro.'),
     });
-    await alert.present();
   }
 
   cargarPortada(idLibro: number) {

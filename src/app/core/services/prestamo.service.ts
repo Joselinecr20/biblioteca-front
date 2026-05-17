@@ -20,6 +20,8 @@ export class PrestamoService {
   }
 
   devolver(id: number): Observable<Prestamo> {
-    return this.http.post<any>(`${this.API}/${id}/devolver`, {}).pipe(map(r => r.data ?? r));
+    const hoy = new Date().toISOString().split('T')[0];
+    return this.http.post<any>(`${this.API}/${id}/devolver`, { fechaDevolucionReal: hoy })
+      .pipe(map(r => r.data ?? r));
   }
 }

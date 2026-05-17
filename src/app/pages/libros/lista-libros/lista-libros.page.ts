@@ -6,12 +6,12 @@ import {
   IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCardSubtitle,
   IonBadge, IonButton, IonIcon, IonFab, IonFabButton,
   IonSkeletonText, IonRefresher, IonRefresherContent,
-  AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { LibroService }   from '../../../core/services/libro.service';
 import { ReservaService } from '../../../core/services/reserva.service';
 import { AuthService }    from '../../../core/services/auth.service';
 import { UploadService }  from '../../../core/services/upload.service';
+import { SwalService }    from '../../../core/services/swal.service';
 import { Libro } from '../../../core/models';
 
 @Component({
@@ -34,10 +34,8 @@ export class ListaLibrosPage implements OnInit, OnDestroy {
   loading  = true;
   rol      = '';
 
-  /** blob URL por idLibro */
   portadaUrls = new Map<number, string>();
   private blobsPortada: string[] = [];
-
   private libroParaPortada: Libro | null = null;
 
   @ViewChild('portadaInput') private portadaInput!: ElementRef<HTMLInputElement>;
@@ -48,8 +46,7 @@ export class ListaLibrosPage implements OnInit, OnDestroy {
     private auth:           AuthService,
     private uploadService:  UploadService,
     private router:         Router,
-    private alertCtrl:      AlertController,
-    private toastCtrl:      ToastController,
+    private swal:           SwalService,
   ) {}
 
   ngOnInit() {
@@ -71,16 +68,15 @@ export class ListaLibrosPage implements OnInit, OnDestroy {
         event?.target?.complete();
         this.precargarPortadas(data);
       },
-      error: async () => {
+      error: () => {
         this.loading = false;
         event?.target?.complete();
-        this.toast('Error al cargar libros', 'danger');
+        this.swal.toast('Error al cargar libros', 'error');
       },
     });
   }
 
   private precargarPortadas(libros: Libro[]) {
-    // Liberar blobs anteriores
     this.blobsPortada.forEach(u => URL.revokeObjectURL(u));
     this.blobsPortada = [];
     this.portadaUrls  = new Map();
@@ -118,86 +114,52 @@ export class ListaLibrosPage implements OnInit, OnDestroy {
     const libro = this.libroParaPortada;
 
     if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
-      this.toast('Solo se permiten imágenes JPG, PNG o WebP', 'danger');
+      this.swal.toast('Solo se permiten imágenes JPG, PNG o WebP', 'error');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      this.toast('La imagen no debe superar los 5 MB', 'danger');
+      this.swal.toast('La imagen no debe superar los 5 MB', 'error');
       return;
     }
 
     this.uploadService.subirPortadaLibro(libro.idLibro, file).subscribe({
       next: () => {
-        // Recargar blob de ese libro
         this.uploadService.getPortadaLibro(libro.idLibro).subscribe(url => {
           if (url) {
             this.blobsPortada.push(url);
             this.portadaUrls = new Map(this.portadaUrls).set(libro.idLibro, url);
           }
         });
-        this.toast('Portada actualizada', 'success');
+        this.swal.toast('Portada actualizada', 'success');
       },
-      error: () => this.toast('Error al subir la portada', 'danger'),
+      error: () => this.swal.toast('Error al subir la portada', 'error'),
     });
   }
 
   async reservar(libro: Libro) {
-    const alert = await this.alertCtrl.create({
-      cssClass: 'biblioteca-alert',
-      header:    'Reservar Libro',
-      subHeader: libro.titulo,
-      message:   '¿Cuántos días necesitas el libro?',
-      inputs: [
-        { type: 'radio', label: '3 días',  value: 3,  checked: true },
-        { type: 'radio', label: '7 días',  value: 7 },
-        { type: 'radio', label: '14 días', value: 14 },
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Reservar',
-          cssClass: 'alert-confirm',
-          handler: (diasPrestamo: number) => {
-            this.reservaService.create({ idLibro: libro.idLibro, idBiblioteca: 1, diasPrestamo }).subscribe({
-              next: () => this.toast('Reserva realizada con éxito', 'success'),
-              error: (err) => this.toast(err?.error?.message || 'Error al crear la reserva', 'danger'),
-            });
-          },
-        },
-      ],
+    const diasPrestamo = await this.swal.selectDias(libro.titulo);
+    if (!diasPrestamo) return;
+
+    this.reservaService.create({ idLibro: libro.idLibro, idBiblioteca: 1, diasPrestamo }).subscribe({
+      next: () => this.swal.success('¡Reserva realizada!', `"${libro.titulo}" reservado por ${diasPrestamo} días`),
+      error: (err) => this.swal.error('Error al reservar', err?.error?.message || 'No se pudo crear la reserva.'),
     });
-    await alert.present();
   }
 
   async eliminar(libro: Libro) {
-    const alert = await this.alertCtrl.create({
-      cssClass:  'biblioteca-alert',
-      header:    'Eliminar Libro',
-      subHeader: libro.titulo,
-      message:   'Esta acción es permanente y no se puede deshacer.',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Eliminar',
-          cssClass: 'alert-danger',
-          handler: () => {
-            this.libroService.delete(libro.idLibro).subscribe({
-              next: () => {
-                this.libros         = this.libros.filter(l => l.idLibro !== libro.idLibro);
-                this.filteredLibros = this.filteredLibros.filter(l => l.idLibro !== libro.idLibro);
-                this.toast('Libro eliminado', 'success');
-              },
-              error: () => this.toast('Error al eliminar el libro', 'danger'),
-            });
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
+    const html = `<p class="swal-subtitulo">${libro.titulo}</p>
+                  <p>Esta acción es permanente y no se puede deshacer.</p>`;
+    const { isConfirmed } = await this.swal.danger('Eliminar Libro', html, 'Eliminar');
+    if (!isConfirmed) return;
 
-  private async toast(message: string, color: string) {
-    (await this.toastCtrl.create({ message, duration: 3000, color, position: 'top' })).present();
+    this.libroService.delete(libro.idLibro).subscribe({
+      next: () => {
+        this.libros         = this.libros.filter(l => l.idLibro !== libro.idLibro);
+        this.filteredLibros = this.filteredLibros.filter(l => l.idLibro !== libro.idLibro);
+        this.swal.success('Libro eliminado');
+      },
+      error: (err) => this.swal.error('Error al eliminar', err?.error?.message || 'No se pudo eliminar el libro.'),
+    });
   }
 
   doRefresh(event: any) { this.cargar(event); }
